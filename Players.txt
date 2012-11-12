@@ -1,0 +1,6 @@
+h, Darth Vader, Black, 4
+c, Randy Moss, Purple, 12
+c, Liam Neeson, Red, 18
+c, Michael Jordan, Blue, 111
+c, Teen Mom, Yellow, 133
+c, FatBoy Slim, Green, 457

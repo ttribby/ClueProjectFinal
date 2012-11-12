@@ -1,0 +1,21 @@
+Room, Conservatory
+Room, Ballroom
+Room, Kitchen
+Room, Billiard Room
+Room, Library
+Room, Study 
+Room, Lounge
+Room, Dining Room
+Room, Hall
+Player, Randy Moss
+Player, Michael Jordan
+Player, Teen Mom
+Player, Fatboy Slim
+Player, D. Vader
+Player, Liam Neeson
+Weapon, Pipe
+Weapon, Knife 
+Weapon, Pool Stick
+Weapon, Pistol
+Weapon, Rope
+Weapon, Candlestick
