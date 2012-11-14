@@ -33,7 +33,37 @@ public class Board extends JPanel{
 	int numRows;
 	int numColumns;
 	int firstSpot;
+	public int currentPlayerIndex;
+	public int humanPlayerIndex;
+	private boolean paintMoveLocations;
+	public void nextPlayer(BottomButtons bb,TopButtons tb){
 
+		//if player turn and not clicked display error and return
+		
+		// set dice view
+		Random n = new Random(System.currentTimeMillis());
+		int dice =n.nextInt(6)+1;
+		BottomButtons.diceNum = dice;
+		System.out.println(dice + "");
+		bb.setDice(dice);
+		
+		// print whose turn
+		Player p[]   = new Player[6]; 
+		players.toArray(p);
+		tb.setPlayersName(p[currentPlayerIndex].name);
+
+		//if currentPlayer is a human player then show move spaces
+		if(currentPlayerIndex == humanPlayerIndex)
+			paintMoveLocations = true;
+		
+		
+
+
+//		p[currentPlayerIndex];
+		currentPlayerIndex = (currentPlayerIndex+1)%6;
+
+		
+	}
 	public Board()  {
 
 		try {
@@ -48,8 +78,8 @@ public class Board extends JPanel{
 			e.printStackTrace();
 		}
 
-
-
+		
+		paintMoveLocations = false;
 	}
 
 	//	
@@ -106,7 +136,8 @@ public class Board extends JPanel{
 			}
 			i++;
 		}
-		
+		currentPlayerIndex = humanPlayer;
+		humanPlayerIndex=humanPlayer;
 		computerPlayers = new HashSet<Player>();
 		for(int j=0;j<thePlayers.length;j++){
 			if(j !=humanPlayer ){
@@ -139,7 +170,9 @@ public class Board extends JPanel{
 			g.setColor(Color.BLACK);		
 			g.drawOval (cells.get(cp.index).col*20, cells.get(cp.index).row*20, 20, 20);
 		}
-
+		if(paintMoveLocations){
+			
+		}
 
 		//draw player locations	
 	}

@@ -2,7 +2,6 @@ package clueGame;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Random;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -10,7 +9,14 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 public class TopButtons extends JPanel{
-	public TopButtons(){
+	private Board b;
+	private BottomButtons bb;
+	private TopButtons me;
+	private JTextField playerName;
+	public TopButtons(Board b,BottomButtons bb){
+		me = this;
+		this.b = b;
+		this.bb = bb;
 		JButton nextPlayer = new JButton();		
 		nextPlayer.setText("Next Player");
 		nextPlayer.addActionListener(new NextPlayer());
@@ -20,6 +26,7 @@ public class TopButtons extends JPanel{
 		JLabel whoseTurn = new JLabel();
 		whoseTurn.setText("Whose turn?");
 		JTextField playerName = new JTextField();
+		this.playerName = playerName;
 		playerName.setText("Colonel Mustard");
 		playerName.setEditable(false);
 		add(whoseTurn);
@@ -31,8 +38,8 @@ public class TopButtons extends JPanel{
 	private class NextPlayer implements ActionListener{
 		public void actionPerformed(ActionEvent e)
 		{
-			int raa =(new Random(6)).nextInt();
-			BottomButtons.diceNum = raa;
+			b.nextPlayer(bb,me);
+			
 			System.out.println("Button pressed");
 		}
 	}
@@ -42,5 +49,7 @@ public class TopButtons extends JPanel{
 			System.out.println("Button pressed");
 		}
 	}
-
+	public void setPlayersName(String name){
+		playerName.setText(name);
+	}
 }

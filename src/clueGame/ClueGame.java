@@ -11,11 +11,13 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 public class ClueGame extends JFrame{
 	public static int EXIT_ON_CLOSE;
 	public MyCards mc;
 	ClueGame() {
+//		JOptionPane.showMessageDialog(this, "you are darth vader", "Welcome to clue" ,JOptionPane.INFORMATION_MESSAGE);
 	    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("hi");
 		setSize(600,550);
@@ -28,7 +30,7 @@ public class ClueGame extends JFrame{
 	    mc = new  MyCards(b.you);
 	    mc.setLayout(new BoxLayout( mc, BoxLayout.Y_AXIS ) );
 	    add(mc,BorderLayout.EAST);
-	    SouthDisplay sd = new SouthDisplay();
+	    SouthDisplay sd = new SouthDisplay(b);
 	    sd.setLayout(new BoxLayout( sd, BoxLayout.Y_AXIS ) );
 	    add(sd,BorderLayout.SOUTH);
 	}
@@ -48,6 +50,7 @@ public class ClueGame extends JFrame{
 		item.addActionListener(new MenuItemListener());
 		return item;
 	}
+
 	
 	private JMenuItem createFileNotesItem(){
 		JMenuItem item = new JMenuItem("Detective Notes");
