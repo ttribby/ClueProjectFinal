@@ -8,6 +8,7 @@ import org.junit.Test;
 import clueGame.Board;
 import clueGame.BoardCell;
 import clueGame.Card;
+import clueGame.ClueGame;
 import clueGame.ComputerPlayer;
 import clueGame.HumanPlayer;
 import clueGame.Player;
@@ -17,7 +18,7 @@ public class GameActionsTests {
 Board brd;
 	@Before
 	public void setUp() throws Exception {
-		brd = new Board();
+		brd = new Board(null);
 		Solution solution = new Solution("Liam Neeson", "Pipe", "Kitchen"); //sample test solution
 		Player player = new HumanPlayer();
 		Player player2 = new ComputerPlayer();
@@ -83,7 +84,7 @@ Board brd;
 	}
 	@Test
 	public void disproveSuggestion() { //not getting the name of the card just the address
-		brd = new Board();
+		brd = new Board(null);
 		Player player = new ComputerPlayer();
 
 		player.myCards.add(new Card("Weapon", "Rope"));

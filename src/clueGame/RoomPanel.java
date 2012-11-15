@@ -20,7 +20,7 @@ public class RoomPanel extends JPanel {
 		setBorder(new TitledBorder(new EtchedBorder(), "Rooms"));
 		
 	}
-	
+
 	private JComboBox CreateComboBox() {
 		JComboBox combo = new JComboBox();
 		combo.addItem("Conservatory");

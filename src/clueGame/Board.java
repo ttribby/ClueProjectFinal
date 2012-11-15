@@ -2,6 +2,8 @@ package clueGame;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
@@ -13,6 +15,7 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.Set;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import clueGame.Card.CardType;
@@ -35,8 +38,53 @@ public class Board extends JPanel{
 	int firstSpot;
 	public int currentPlayerIndex;
 	public int humanPlayerIndex;
-	private boolean paintMoveLocations;
+	private boolean humanTurn;
+	private int diceNum;
+	private Set<BoardCell> moveLocations;
+	public ClueGame clueGame;
+	public boolean humanTurnWasMade;
+
 	public void nextPlayer(BottomButtons bb,TopButtons tb){
+//		p[currentPlayerIndex];
+		//if it is human players turn and humanTurnWasMade = false
+		if(!humanTurnWasMade && currentPlayerIndex == humanPlayerIndex){
+			clueGame.invalidNeedToFinishTurn();
+			return;
+		}
+		humanTurnWasMade = false;
+		System.out.println("before incrementing = " + currentPlayerIndex);
+		currentPlayerIndex = (currentPlayerIndex+1)%6;
+		System.out.println("after incrementing = " + currentPlayerIndex);		
+		//if player turn and not clicked display error and return
+		
+		// set dice view
+		Random n = new Random(System.currentTimeMillis());
+		int dice =n.nextInt(6)+1;
+		BottomButtons.diceNum = dice;
+		diceNum = dice;
+		System.out.println(dice + "");
+		bb.setDice(dice);
+		
+
+
+		//if currentPlayer is a human player then show move spaces
+		if(currentPlayerIndex == humanPlayerIndex){
+			System.out.println("setting human turn");
+			humanTurn = true;
+		}else{
+			Player p[]   = new Player[6]; 
+			players.toArray(p);
+			//take that grader
+			p[currentPlayerIndex].index =calcIndex( p[currentPlayerIndex].pickLocation(getTargets(p[currentPlayerIndex].index, dice)).row,    p[currentPlayerIndex].pickLocation(getTargets(p[currentPlayerIndex].index, dice)).col);
+		}
+		this.updateUI();
+		// print whose turn
+		Player p[]   = new Player[6]; 
+		players.toArray(p);
+		tb.setPlayersName(p[currentPlayerIndex].name);
+	}
+	
+	public void firstNextPlayer(BottomButtons bb,TopButtons tb){
 
 		//if player turn and not clicked display error and return
 		
@@ -44,28 +92,31 @@ public class Board extends JPanel{
 		Random n = new Random(System.currentTimeMillis());
 		int dice =n.nextInt(6)+1;
 		BottomButtons.diceNum = dice;
+		diceNum = dice;
 		System.out.println(dice + "");
 		bb.setDice(dice);
 		
+
+
+		//if currentPlayer is a human player then show move spaces
+		if(currentPlayerIndex == humanPlayerIndex){
+			System.out.println("setting human turn");
+			humanTurn = true;
+		}else{
+//			Player p[]   = new Player[6]; 
+//			players.toArray(p);
+//
+//			p[currentPlayerIndex].index = calcTargets(p[currentPlayerIndex].index,dice);
+			
+		}
+		this.updateUI();
 		// print whose turn
 		Player p[]   = new Player[6]; 
 		players.toArray(p);
 		tb.setPlayersName(p[currentPlayerIndex].name);
-
-		//if currentPlayer is a human player then show move spaces
-		if(currentPlayerIndex == humanPlayerIndex)
-			paintMoveLocations = true;
-		
-		
-
-
-//		p[currentPlayerIndex];
-		currentPlayerIndex = (currentPlayerIndex+1)%6;
-
-		
 	}
-	public Board()  {
-
+	public Board(ClueGame clueGame)  {
+		this.clueGame = clueGame;
 		try {
 			loadConfigFiles("ClueBoardLegend.txt","ClueBoardLayout.txt","deck.txt");
 		} catch (FileNotFoundException e) {
@@ -78,8 +129,8 @@ public class Board extends JPanel{
 			e.printStackTrace();
 		}
 
-		
-		paintMoveLocations = false;
+		humanTurnWasMade = false;
+		humanTurn = false;
 	}
 
 	//	
@@ -96,23 +147,31 @@ public class Board extends JPanel{
 		solution = new HashSet<Card>();
 
 		while(solution.size() < 3) {
-
+			String[] solCards = new String[3];
+			int i = 0;
 			for(Card sol: deckCopy) {
-
+				
+				
 				if((sol.cardType == CardType.PLAYER) && num_player < 1 ) {
+					solCards[0] = sol.name;
 					solution.add(sol);
 					dealt.add(sol);
 					num_player++;
 				}else if((sol.cardType == CardType.ROOM) && num_room < 1) {
+					solCards[2] = sol.name;
 					solution.add(sol);
 					dealt.add(sol);
 					num_room++;
 				}else if((sol.cardType == CardType.WEAPON) && num_weapon < 1) {
+					solCards[1] = sol.name;
 					solution.add(sol);
 					dealt.add(sol);
 					num_weapon++;
 				}	
 			}
+			Solution.Person = solCards[0];
+			Solution.Weapon = solCards[1];
+			Solution.Room = solCards[2];
 		}
 		int size = deckCopy.size();
 		for(Player player: players) {
@@ -136,14 +195,17 @@ public class Board extends JPanel{
 			}
 			i++;
 		}
-		currentPlayerIndex = humanPlayer;
-		humanPlayerIndex=humanPlayer;
+		System.out.println("human player index = " + humanPlayer);
+		System.out.println("human player name"  + you.name);
+		currentPlayerIndex = humanPlayer;//(humanPlayer+1)%6;
+		humanPlayerIndex=humanPlayer;//(humanPlayer+1)%6;
 		computerPlayers = new HashSet<Player>();
 		for(int j=0;j<thePlayers.length;j++){
 			if(j !=humanPlayer ){
 				computerPlayers.add(thePlayers[j]);
 			}
 		}
+		addMouseListener(new CellClickedListener());
 	}
 
 
@@ -170,8 +232,24 @@ public class Board extends JPanel{
 			g.setColor(Color.BLACK);		
 			g.drawOval (cells.get(cp.index).col*20, cells.get(cp.index).row*20, 20, 20);
 		}
-		if(paintMoveLocations){
-			
+		System.out.println("want to pring locations");
+		System.out.println(humanPlayerIndex);
+		System.out.println(currentPlayerIndex);
+		
+		if(humanPlayerIndex ==currentPlayerIndex && !humanTurnWasMade){
+		
+			Player p[]   = new Player[6]; 
+			players.toArray(p);
+			int index = p[currentPlayerIndex].index;
+			System.out.println( "index is " + index);
+			Set<BoardCell> drawLocations = getTargets(index,diceNum );
+			moveLocations = drawLocations;
+			System.out.println("drawLocation size" + drawLocations.size());
+			for(BoardCell c: drawLocations){
+				g.setColor(Color.cyan);
+				g.fillRect(20*c.col, 20*c.row, 20, 20);
+				System.out.println("draw a location");
+			}
 		}
 
 		//draw player locations	
@@ -394,10 +472,13 @@ public class Board extends JPanel{
 		deck = new HashSet<Card>();
 		FileReader r = new FileReader(x);
 		Scanner scan = new Scanner(r);
-		scan.useDelimiter(",|\n");
+		scan.useDelimiter(",|\r\n|\n");
+
 		while(scan.hasNext()) {
 			String z = scan.next();
 			String y = scan.next();
+			System.out.println("--" + y + "--");
+			System.out.println("--" + z + "--");
 			deck.add(new Card(z, y));
 
 		}
@@ -408,7 +489,7 @@ public class Board extends JPanel{
 
 	public Boolean checkAccusation(String Person, String Weapon, String Room){
 		Boolean right = false;
-		if((Person ==Solution.Person) && (Weapon ==Solution.Weapon) && (Room ==Solution.Room)){
+		if((Person.equals(Solution.Person)) && (Weapon.equals(Solution.Weapon)) && (Room.equals(Solution.Room))){
 			right =  true;
 		}
 		return right;
@@ -424,4 +505,72 @@ public class Board extends JPanel{
 		}
 	}
 
+	
+	private class CellClickedListener implements MouseListener {
+		private int x,y;
+		@Override
+		public void mouseClicked(MouseEvent e) {
+
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			// TODO Auto-generated method stub
+			x = e.getX();
+			y = e.getY();
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			// TODO Auto-generated method stub
+			if(!humanTurnWasMade){
+				humanTurnWasMade = true;
+				if(e.getX() == x && e.getY() == y && currentPlayerIndex == humanPlayerIndex){
+					int xCell = x/20;
+					int yCell = y/20;
+					boolean foundCell = false;
+					for(BoardCell bc: moveLocations){
+						if(bc.col == xCell && bc.row == yCell){
+							System.out.println("you win");
+							foundCell = true;
+							you.index =calcIndex(yCell, xCell);
+							repaint();
+							if(bc.isDoorway()){
+								
+							}
+							return;
+						}
+					}
+					if(!foundCell){
+						clueGame.invalidMoveClick();
+						humanTurnWasMade = false;
+					}
+					
+					System.out.println("xCell = " + xCell);
+					System.out.println("yCell = " + yCell);
+
+
+				}
+			}
+		}
+
+
+
+
+	}
+
+
+	
 }

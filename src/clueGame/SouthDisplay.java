@@ -20,5 +20,8 @@ public class SouthDisplay extends JPanel {
 		add (tp,BorderLayout.NORTH);
 		add(bb,BorderLayout.SOUTH);
 		setBorder(new TitledBorder(new EtchedBorder(),"Turn Info"));
+		b.firstNextPlayer(bb, tp);
+		
 	}
+	
 }

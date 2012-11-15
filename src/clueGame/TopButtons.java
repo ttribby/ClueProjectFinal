@@ -46,7 +46,7 @@ public class TopButtons extends JPanel{
 	private class MakeAnAccusation implements ActionListener{
 		public void actionPerformed(ActionEvent e)
 		{
-			System.out.println("Button pressed");
+			b.clueGame.displayAccusationPanel();		
 		}
 	}
 	public void setPlayersName(String name){

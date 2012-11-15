@@ -7,24 +7,30 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.TitledBorder;
 
 public class ClueGame extends JFrame{
 	public static int EXIT_ON_CLOSE;
 	public MyCards mc;
+	private AccusationPanel accusationPanel;
+	public Board b;
 	ClueGame() {
 //		JOptionPane.showMessageDialog(this, "you are darth vader", "Welcome to clue" ,JOptionPane.INFORMATION_MESSAGE);
 	    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setTitle("hi");
+		setTitle("Clue Game");
 		setSize(600,550);
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
 		menuBar.add(createFileMenu());
-	    Board b = new Board();
+	    Board b = new Board(this);
+	    this.b = b;
 	    add (b,BorderLayout.CENTER);
 	    b.deal();
 	    mc = new  MyCards(b.you);
@@ -33,6 +39,8 @@ public class ClueGame extends JFrame{
 	    SouthDisplay sd = new SouthDisplay(b);
 	    sd.setLayout(new BoxLayout( sd, BoxLayout.Y_AXIS ) );
 	    add(sd,BorderLayout.SOUTH);
+	    accusationPanel = new AccusationPanel(b);
+
 	}
 	private JMenu createFileMenu(){
 		JMenu menu = new JMenu("File");
@@ -40,6 +48,7 @@ public class ClueGame extends JFrame{
 		menu.add(createFileExitItem());
 		return menu;
 	}
+	
 	private JMenuItem createFileExitItem(){
 		JMenuItem item = new JMenuItem("EXIT");
 		class MenuItemListener implements ActionListener {
@@ -70,5 +79,20 @@ public class ClueGame extends JFrame{
 	    dn = new detectiveNotes();
 	   
 
+	}
+	public void invalidMoveClick(){
+		JOptionPane.showMessageDialog(this, "You can't move there idiot", "Bad Move" ,JOptionPane.INFORMATION_MESSAGE);
+	}
+	
+	public void invalidNeedToFinishTurn(){
+		JOptionPane.showMessageDialog(this, "You need to finish your turn", "Bad Move" ,JOptionPane.INFORMATION_MESSAGE);
+	}
+	public void displayAccusationPanel(){
+		if(!b.humanTurnWasMade){
+			accusationPanel.setVisible(true);
+			
+		}else{
+			JOptionPane.showMessageDialog(this, "You Already Made Your Turn", "Bad Move" ,JOptionPane.INFORMATION_MESSAGE);
+		}
 	}
 }

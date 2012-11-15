@@ -29,7 +29,7 @@ public class PlayerPanel extends JPanel {
 		combo.addItem("Liam Neeson");
 		combo.addItem("Michael Jordan");
 		combo.addItem("Teen Mom");
-		combo.addItem("You");
+		combo.addItem("Fatboy Slim");
 		return combo;
 
 	}
