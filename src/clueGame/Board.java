@@ -32,7 +32,7 @@ public class Board extends JPanel{
 	public Set<Player> players;
 	public Set<Player> computerPlayers;
 	public HumanPlayer you = new HumanPlayer();
-	public Set<Card> deck = new HashSet<Card>();
+	static public Set<Card> deck = new HashSet<Card>();
 	int numRows;
 	int numColumns;
 	int firstSpot;
@@ -74,14 +74,25 @@ public class Board extends JPanel{
 		}else{
 			Player p[]   = new Player[6]; 
 			players.toArray(p);
-			//take that grader
-			p[currentPlayerIndex].index =calcIndex( p[currentPlayerIndex].pickLocation(getTargets(p[currentPlayerIndex].index, dice)).row,    p[currentPlayerIndex].pickLocation(getTargets(p[currentPlayerIndex].index, dice)).col);
+			Player a = p[currentPlayerIndex];
+			BoardCell b = a.pickLocation(getTargets(a.index, dice));
+			a.index =calcIndex( b.row, b.col);
+			BoardCell bc = getCellAt((a.index));
+			if(bc.isDoorway()){
+				Player[] thePlayers = new Player[6];
+				players.toArray(thePlayers);
+				System.out.println("------------------------------in room");
+				clueGame.showSuggestionPanel(rooms.get(bc.getRooomName()),thePlayers[currentPlayerIndex]);
+
+			}
+
 		}
 		this.updateUI();
 		// print whose turn
 		Player p[]   = new Player[6]; 
 		players.toArray(p);
 		tb.setPlayersName(p[currentPlayerIndex].name);
+		
 	}
 	
 	public void firstNextPlayer(BottomButtons bb,TopButtons tb){
@@ -138,7 +149,7 @@ public class Board extends JPanel{
 	//	public void paintComponent(){
 	//		
 	//	}
-	public void deal() { //i have no idea what the fuck is wrong
+	public void deal() { 
 		int num_player = 0;
 		int num_weapon = 0;
 		int num_room = 0;
@@ -173,6 +184,7 @@ public class Board extends JPanel{
 			Solution.Weapon = solCards[1];
 			Solution.Room = solCards[2];
 		}
+		
 		int size = deckCopy.size();
 		for(Player player: players) {
 			int r = new Random().nextInt(size);
@@ -547,13 +559,18 @@ public class Board extends JPanel{
 							foundCell = true;
 							you.index =calcIndex(yCell, xCell);
 							repaint();
+							//show what room your in
 							if(bc.isDoorway()){
-								
+								Player[] thePlayers = new Player[6];
+								players.toArray(thePlayers);
+								System.out.println("------------------------------in room");
+								clueGame.showSuggestionPanel(rooms.get(bc.getRooomName()),thePlayers[currentPlayerIndex]);
 							}
 							return;
 						}
 					}
 					if(!foundCell){
+						
 						clueGame.invalidMoveClick();
 						humanTurnWasMade = false;
 					}

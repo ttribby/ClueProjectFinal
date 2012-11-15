@@ -21,11 +21,11 @@ public class BottomButtons extends JPanel {
 		rollResult.setEditable(false);
 		rollResult.setText("5");
 		guess.setText("Guess");
-		guessResult.setText("Professor Plum Dining Room Wrench");
+		guessResult.setText("");
 		guessResult.setEditable(false);
 		response.setText("Response");
 		responseResult.setEditable(false);
-		responseResult.setText("Professor Plum");
+		responseResult.setText("");
 		add(dieRoll);
 		add(rollResult);
 		add(guess);
@@ -37,6 +37,10 @@ public class BottomButtons extends JPanel {
 	public static int diceNum = 0;
 	public void setDice(int num){
 		rollResult.setText(num + "");
+	}
+	public void setDisplay(String guess, String response){
+		guessResult.setText(guess);
+		responseResult.setText(response);
 	}
 	
 }

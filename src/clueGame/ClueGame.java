@@ -7,20 +7,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.border.EtchedBorder;
-import javax.swing.border.TitledBorder;
 
 public class ClueGame extends JFrame{
 	public static int EXIT_ON_CLOSE;
 	public MyCards mc;
 	private AccusationPanel accusationPanel;
+	private SuggestionPanel suggestionPanel;
 	public Board b;
+	private SouthDisplay sd;
+	
 	ClueGame() {
 //		JOptionPane.showMessageDialog(this, "you are darth vader", "Welcome to clue" ,JOptionPane.INFORMATION_MESSAGE);
 	    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -36,11 +36,11 @@ public class ClueGame extends JFrame{
 	    mc = new  MyCards(b.you);
 	    mc.setLayout(new BoxLayout( mc, BoxLayout.Y_AXIS ) );
 	    add(mc,BorderLayout.EAST);
-	    SouthDisplay sd = new SouthDisplay(b);
+	    sd = new SouthDisplay(b);
 	    sd.setLayout(new BoxLayout( sd, BoxLayout.Y_AXIS ) );
 	    add(sd,BorderLayout.SOUTH);
 	    accusationPanel = new AccusationPanel(b);
-
+	    //suggestionPanel = new SuggestionPanel(b,"error",new Player());
 	}
 	private JMenu createFileMenu(){
 		JMenu menu = new JMenu("File");
@@ -94,5 +94,36 @@ public class ClueGame extends JFrame{
 		}else{
 			JOptionPane.showMessageDialog(this, "You Already Made Your Turn", "Bad Move" ,JOptionPane.INFORMATION_MESSAGE);
 		}
+	}
+	public void showSuggestionPanel(String room,Player p){
+		if(b.humanTurnWasMade){
+			suggestionPanel = new SuggestionPanel(b,room,p);
+			
+
+			suggestionPanel.setVisible(true);		
+			
+		}else{
+			//computer
+			((ComputerPlayer)p).createSuggestion();
+			String theRoom  = ((ComputerPlayer)p).suggestedRoom.name;
+			String thePlayer  = ((ComputerPlayer)p).suggestedPerson.name;
+			String theWeapon  = ((ComputerPlayer)p).suggestedWeapon.name;
+			if(((ComputerPlayer)p).unseenCards.size() == 3){
+				JOptionPane.showMessageDialog(this, "The answer is " + theRoom + " " + thePlayer + " " + theWeapon , "Computer Wins Game Over" ,JOptionPane.INFORMATION_MESSAGE);
+			}
+				
+			Card c= ((ComputerPlayer)p).disproveSuggestion(thePlayer,theWeapon,theRoom);
+			b.clueGame.setGuessDisplay(thePlayer + " " + theRoom + " " + theWeapon, c.name);
+			for(Player player: b.players){
+				if(player.name.equals(thePlayer)){
+					player.index = ((ComputerPlayer)p).index;
+				}
+			}
+		}
+
+		
+	}
+	public void setGuessDisplay(String guess, String response){
+		sd.bb.setDisplay(guess, response);
 	}
 }
